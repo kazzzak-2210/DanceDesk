@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DanceDesk | Rehearsal Manager</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .tracker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .tracker-card {
+      background: var(--panel, #fff);
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .tracker-card strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-top: 8px;
+    }
+    .tracker-card small, .field-hint {
+      color: var(--muted, #777);
+      font-size: .85rem;
+    }
+    .tracker-history {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tracker-person {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: 12px;
+    }
+    .tracker-person strong { font-size: 1rem; }
+    .tracker-person span { color: var(--muted, #777); font-size: .9rem; }
+    .tracker-person select { max-width: 130px; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 20px;
+      font-size: .78rem;
+      margin-top: 8px;
+      background: #f0eee8;
+    }
+    .status-badge.completed { background: #e2f5e9; color: #176b39; }
+    .status-badge.pending { background: #fff2d9; color: #8a5a00; }
+    select[multiple] {
+      min-height: 125px;
+      padding: 10px;
+    }
+    @media (max-width: 520px) {
+      .tracker-person { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -21,7 +79,7 @@
         <h2>Every day, a different plan.</h2>
         <p>Add clients and rehearsal slots as they come. Your schedule is saved in this browser.</p>
       </div>
-      <button class="primary" id="newSlotBtn">＋ Add rehearsal</button>
+      <button class="primary" id="newSlotBtn">+ Add rehearsal</button>
     </section>
 
     <section class="toolbar panel">
@@ -37,58 +95,203 @@
     </section>
 
     <section class="stats">
-      <article class="stat panel"><span>Rehearsal slots</span><strong id="slotCount">0</strong></article>
-      <article class="stat panel"><span>Different clients / groups</span><strong id="clientCount">0</strong></article>
-      <article class="stat panel"><span>Choreographers</span><strong id="choreoCount">0</strong></article>
+      <article class="stat panel">
+        <span>Rehearsal slots</span>
+        <strong id="slotCount">0</strong>
+      </article>
+      <article class="stat panel">
+        <span>Different clients / groups</span>
+        <strong id="clientCount">0</strong>
+      </article>
+      <article class="stat panel">
+        <span>Choreographers</span>
+        <strong id="choreoCount">0</strong>
+      </article>
     </section>
 
     <section class="schedule-section">
       <div class="section-heading">
-        <div><p class="eyebrow">YOUR DAY AT A GLANCE</p><h2 id="scheduleHeading">Schedule</h2></div>
+        <div>
+          <p class="eyebrow">YOUR DAY AT A GLANCE</p>
+          <h2 id="scheduleHeading">Schedule</h2>
+        </div>
         <button class="text-button" id="clearDayBtn">Clear this date</button>
       </div>
       <div id="scheduleList" class="schedule-list"></div>
     </section>
 
+    <section class="tracker-section panel" style="padding:20px; margin-top:28px;">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">TEAM PERFORMANCE</p>
+          <h2>Choreographer Session Tracker</h2>
+          <p class="field-hint">Only completed rehearsals are counted.</p>
+        </div>
+      </div>
+
+      <div class="tracker-grid">
+        <article class="tracker-card">
+          <span>Total completed individual sessions</span>
+          <strong id="totalCompletedCount">0</strong>
+          <small>Across all choreographers</small>
+        </article>
+        <article class="tracker-card">
+          <span>Completed rehearsals</span>
+          <strong id="completedSlotCount">0</strong>
+          <small>Actual rehearsal slots marked completed</small>
+        </article>
+      </div>
+
+      <h3>Individual totals</h3>
+      <div id="choreographerTracker" class="tracker-history"></div>
+
+      <div style="margin-top:24px;">
+        <label>
+          <span>View session history for</span>
+          <select id="trackerPerson">
+            <option value="Shreya">Shreya</option>
+            <option value="Dev">Dev</option>
+            <option value="Nisha">Nisha</option>
+            <option value="Dhwani">Dhwani</option>
+            <option value="Isha">Isha</option>
+          </select>
+        </label>
+        <div id="trackerHistory" class="tracker-history"></div>
+      </div>
+    </section>
+
     <section class="message-panel panel">
       <div class="section-heading">
-        <div><p class="eyebrow">READY TO SEND</p><h2>WhatsApp message</h2></div>
+        <div>
+          <p class="eyebrow">READY TO SEND</p>
+          <h2>WhatsApp message</h2>
+        </div>
         <button class="secondary" id="generateBtn">Generate message</button>
       </div>
+
       <div class="message-options">
-        <label><span>Greeting (optional)</span><input id="greeting" value="Hi everyone! 😊"></label>
-        <label><span>Reminder (optional)</span><input id="reminder" value="A small request to please be on time so we can make the most of our rehearsal. 😊"></label>
+        <label>
+          <span>Greeting</span>
+          <input id="greeting"
+            value="Hi everyone! Sharing today's schedule and tasks:">
+        </label>
+
+        <label>
+          <span>Closing message</span>
+          <input id="reminder"
+            value="Please coordinate accordingly and make sure we're on time for each session. Thanks, everyone!">
+        </label>
       </div>
-      <textarea id="messageOutput" rows="12" placeholder="Your message will appear here..."></textarea>
+
+      <textarea id="messageOutput" rows="14"
+        placeholder="Your message will appear here..."></textarea>
+
       <div class="message-actions">
         <button class="primary" id="copyBtn">Copy message</button>
         <span id="copyStatus" role="status"></span>
       </div>
     </section>
 
-    <footer>DanceDesk saves your entries on this device in this browser. Use Export backup regularly if you change devices or clear browser data.</footer>
+    <footer>
+      DanceDesk saves your entries on this device in this browser.
+      Export your data regularly if you change devices or clear browser data.
+    </footer>
   </main>
 
   <dialog id="slotDialog">
     <form id="slotForm" method="dialog">
       <div class="dialog-heading">
-        <div><p class="eyebrow">SCHEDULE DETAILS</p><h2 id="dialogTitle">Add rehearsal</h2></div>
-        <button type="button" class="close-btn" id="closeDialog" aria-label="Close">×</button>
+        <div>
+          <p class="eyebrow">SCHEDULE DETAILS</p>
+          <h2 id="dialogTitle">Add rehearsal</h2>
+        </div>
+        <button type="button" class="close-btn" id="closeDialog"
+          aria-label="Close">×</button>
       </div>
+
       <input type="hidden" id="slotId">
+
       <div class="form-grid">
-        <label class="wide"><span>Date *</span><input type="date" id="slotDate" required></label>
-        <label class="wide"><span>Client / group name *</span><input id="client" placeholder="e.g. Alokik, Hemangi, Aunties group" required></label>
-        <label><span>Start time *</span><input type="time" id="startTime" required></label>
-        <label><span>End time</span><input type="time" id="endTime"></label>
-        <label class="wide"><span>Activity</span><input id="activity" placeholder="Rehearsal, solo, dance videos..."></label>
-        <label class="wide"><span>Choreographer(s)</span><input id="choreographers" placeholder="Separate names with commas"></label>
-        <label class="wide"><span>Venue</span><input id="venue" placeholder="Studio / client's place / venue"></label>
-        <label class="wide"><span>Notes</span><textarea id="notes" rows="3" placeholder="Any special instructions or details"></textarea></label>
+        <label class="wide">
+          <span>Date *</span>
+          <input type="date" id="slotDate" required>
+        </label>
+
+        <label class="wide">
+          <span>Client / group name *</span>
+          <input id="client"
+            placeholder="e.g. Alokik, Hemangi, Aunties group" required>
+        </label>
+
+        <label>
+          <span>Start time *</span>
+          <input type="time" id="startTime" required>
+        </label>
+
+        <label>
+          <span>End time</span>
+          <input type="time" id="endTime">
+        </label>
+
+        <label class="wide">
+          <span>Activity *</span>
+          <select id="activity" required>
+            <option value="">Choose activity</option>
+            <option>Online Videos</option>
+            <option>Tutorial Videos</option>
+            <option>Offline Dance Practice</option>
+            <option>Offline Rehearsal Activities</option>
+          </select>
+        </label>
+
+        
+<div class="wide">
+  <span>Choreographers</span>
+  <div class="choreographer-options">
+    <label><input type="checkbox" name="choreographer" value="Shreya"> Shreya</label>
+    <label><input type="checkbox" name="choreographer" value="Dev"> Dev</label>
+    <label><input type="checkbox" name="choreographer" value="Nisha"> Nisha</label>
+    <label><input type="checkbox" name="choreographer" value="Dhwani"> Dhwani</label>
+    <label><input type="checkbox" name="choreographer" value="Isha"> Isha</label>
+  </div>
+</div>
+
+
+        <label class="wide">
+          <span>Venue</span>
+          <input id="venue"
+            placeholder="Studio / client's place / venue">
+        </label>
+
+        <label class="wide">
+          <span>Tasks / Videos / Dances</span>
+          <textarea id="taskDetails" rows="4"
+            placeholder="Enter each dance or task on a new line"></textarea>
+        </label>
+
+        <label class="wide">
+          <span>Additional Notes</span>
+          <textarea id="notes" rows="3"
+            placeholder="Any special instructions or details"></textarea>
+        </label>
+
+        <label class="wide">
+          <span>Session status</span>
+          <select id="status">
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <small class="field-hint">A session is counted only when marked Completed.</small>
+        </label>
       </div>
+
       <div class="dialog-actions">
-        <button type="button" class="secondary" id="cancelDialog">Cancel</button>
-        <button type="submit" class="primary">Save rehearsal</button>
+        <button type="button" class="secondary" id="cancelDialog">
+          Cancel
+        </button>
+        <button type="submit" class="primary">
+          Save rehearsal
+        </button>
       </div>
     </form>
   </dialog>
