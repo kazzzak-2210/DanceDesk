@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DanceDesk | Rehearsal Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">YOUR REHEARSAL CONTROL ROOM</p>
+      <h1>Dance<span>Desk</span></h1>
+    </div>
+    <div class="today-pill" id="todayLabel"></div>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <div>
+        <h2>Every day, a different plan.</h2>
+        <p>Add clients and rehearsal slots as they come. Your schedule is saved in this browser.</p>
+      </div>
+      <button class="primary" id="newSlotBtn">＋ Add rehearsal</button>
+    </section>
+
+    <section class="toolbar panel">
+      <label>
+        <span>Choose date</span>
+        <input type="date" id="selectedDate">
+      </label>
+      <label class="search-wrap">
+        <span>Find a client or choreographer</span>
+        <input type="search" id="searchInput" placeholder="Search today's schedule...">
+      </label>
+      <button class="secondary" id="todayBtn">Today</button>
+    </section>
+
+    <section class="stats">
+      <article class="stat panel"><span>Rehearsal slots</span><strong id="slotCount">0</strong></article>
+      <article class="stat panel"><span>Different clients / groups</span><strong id="clientCount">0</strong></article>
+      <article class="stat panel"><span>Choreographers</span><strong id="choreoCount">0</strong></article>
+    </section>
+
+    <section class="schedule-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">YOUR DAY AT A GLANCE</p><h2 id="scheduleHeading">Schedule</h2></div>
+        <button class="text-button" id="clearDayBtn">Clear this date</button>
+      </div>
+      <div id="scheduleList" class="schedule-list"></div>
+    </section>
+
+    <section class="message-panel panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">READY TO SEND</p><h2>WhatsApp message</h2></div>
+        <button class="secondary" id="generateBtn">Generate message</button>
+      </div>
+      <div class="message-options">
+        <label><span>Greeting (optional)</span><input id="greeting" value="Hi everyone! 😊"></label>
+        <label><span>Reminder (optional)</span><input id="reminder" value="A small request to please be on time so we can make the most of our rehearsal. 😊"></label>
+      </div>
+      <textarea id="messageOutput" rows="12" placeholder="Your message will appear here..."></textarea>
+      <div class="message-actions">
+        <button class="primary" id="copyBtn">Copy message</button>
+        <span id="copyStatus" role="status"></span>
+      </div>
+    </section>
+
+    <footer>DanceDesk saves your entries on this device in this browser. Use Export backup regularly if you change devices or clear browser data.</footer>
+  </main>
+
+  <dialog id="slotDialog">
+    <form id="slotForm" method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">SCHEDULE DETAILS</p><h2 id="dialogTitle">Add rehearsal</h2></div>
+        <button type="button" class="close-btn" id="closeDialog" aria-label="Close">×</button>
+      </div>
+      <input type="hidden" id="slotId">
+      <div class="form-grid">
+        <label class="wide"><span>Date *</span><input type="date" id="slotDate" required></label>
+        <label class="wide"><span>Client / group name *</span><input id="client" placeholder="e.g. Alokik, Hemangi, Aunties group" required></label>
+        <label><span>Start time *</span><input type="time" id="startTime" required></label>
+        <label><span>End time</span><input type="time" id="endTime"></label>
+        <label class="wide"><span>Activity</span><input id="activity" placeholder="Rehearsal, solo, dance videos..."></label>
+        <label class="wide"><span>Choreographer(s)</span><input id="choreographers" placeholder="Separate names with commas"></label>
+        <label class="wide"><span>Venue</span><input id="venue" placeholder="Studio / client's place / venue"></label>
+        <label class="wide"><span>Notes</span><textarea id="notes" rows="3" placeholder="Any special instructions or details"></textarea></label>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="secondary" id="cancelDialog">Cancel</button>
+        <button type="submit" class="primary">Save rehearsal</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
